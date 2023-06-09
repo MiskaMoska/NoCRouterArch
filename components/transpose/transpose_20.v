@@ -1,7 +1,7 @@
 /****************************************************************************
  *   Copyright (c) 2023 Wenxu Cao
  *  
- *   Filename:         traspose_20.v
+ *   Filename:         transpose_20.v
  *   Institution:      UESTC
  *   Author:           Wenxu Cao
  *   Version:          1.0

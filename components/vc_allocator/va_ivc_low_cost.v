@@ -8,7 +8,7 @@
  *   Date:             2023-06-08
  *
  *   Description:      This is the input VC stage of the VC allocator.
- *                     Described in the grey block in Fig.7.13 @ P-127.
+ *                     Presented in the grey block in Fig.7.13 @ P-127.
  *
  *   Annotation:       This local arbitration step is for cases where one 
  *                     input VC may request multiple output VCs, if you can 
@@ -30,7 +30,7 @@ module va_ivc_low_cost(
     input       wire        [`N-1 : 0]      reqPort,
     input       wire        [`V-1 : 0]      reqVC,
 
-    // output VC availability indicators
+    // output VC availability flags
     input       wire        [`V-1 : 0]      outVCAvailable_P0,
     input       wire        [`V-1 : 0]      outVCAvailable_P1,
     input       wire        [`V-1 : 0]      outVCAvailable_P2,

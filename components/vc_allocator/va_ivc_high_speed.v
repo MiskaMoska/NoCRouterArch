@@ -8,7 +8,7 @@
  *   Date:             2023-06-08
  *
  *   Description:      This is the input VC stage of the VC allocator.
- *                     Described in the grey block in Fig.7.14 @ P-128.
+ *                     Presented in the grey block in Fig.7.14 @ P-128.
  *
  *   Annotation:       This local arbitration step is for cases where one 
  *                     input VC may request multiple output VCs, if you can 

@@ -37,10 +37,6 @@ module va_ivc_low_cost(
     input       wire        [`V-1 : 0]      outVCAvailable_P3,
     input       wire        [`V-1 : 0]      outVCAvailable_P4,
 
-    // input and output granted signal
-    input       wire                        VCgrantedIn,
-    output      wire                        VCgranted,
-
     // output selected out VCs
     output      wire        [`V-1 : 0]      selOutVC,
 
@@ -55,8 +51,6 @@ wire    [`V-1 : 0]  reqVCOut_to_P1;
 wire    [`V-1 : 0]  reqVCOut_to_P2;
 wire    [`V-1 : 0]  reqVCOut_to_P3;
 wire    [`V-1 : 0]  reqVCOut_to_P4;
-
-assign VCgranted = VCgrantedIn;
 
 mux_5 #(`V) out_avail_mux(
     reqPort,

@@ -14,7 +14,10 @@
  *
 *****************************************************************************/
 
-module input_port_stage(
+module input_port_stage #(
+    parameter                               CUR_X = 0,
+    parameter                               CUR_Y = 0
+)(
     input       wire                        clk,
     input       wire                        rstn,
 
@@ -23,7 +26,41 @@ module input_port_stage(
     input       wire        [`DW-1 : 0]     data,
     output      wire                        ready,
 
+    // output VC ready signals
+    input       wire        [`V-1 : 0]      readyVC_from_OP0,
+    input       wire        [`V-1 : 0]      readyVC_from_OP1,
+    input       wire        [`V-1 : 0]      readyVC_from_OP2,
+    input       wire        [`V-1 : 0]      readyVC_from_OP3,
+    input       wire        [`V-1 : 0]      readyVC_from_OP4,
 
+    // output VC availability flags
+    input       wire        [`V-1 : 0]      outVCAvailable_P0,
+    input       wire        [`V-1 : 0]      outVCAvailable_P1,
+    input       wire        [`V-1 : 0]      outVCAvailable_P2,
+    input       wire        [`V-1 : 0]      outVCAvailable_P3,
+    input       wire        [`V-1 : 0]      outVCAvailable_P4
+
+    // from VC allocator main part
+    input       wire                        VCgranted_to_VC0,
+    input       wire                        VCgranted_to_VC1,
+    input       wire                        VCgranted_to_VC2,
+    input       wire                        VCgranted_to_VC3,
+
+    // to VC allocator main part
+    output      wire        [`N*`V-1 : 0]   reqVCOut_from_VC0,                    
+    output      wire        [`N*`V-1 : 0]   reqVCOut_from_VC1,                    
+    output      wire        [`N*`V-1 : 0]   reqVCOut_from_VC2,                    
+    output      wire        [`N*`V-1 : 0]   reqVCOut_from_VC3,
+
+    // from switch allocator main part
+    input       wire                        PortGrantIn,        
+
+    // to switch allocator main part
+    output      wire        [`N-1 : 0]      reqSAOut,
+
+    // to crossbar main part
+    output      wire        [`DW-1 : 0]     data_out,
+    output      wire                        valid_out
 );
 
 // for input buffers
@@ -62,6 +99,51 @@ wire    [`V-1 : 0]      candidateOutVC0;
 wire    [`V-1 : 0]      candidateOutVC1;
 wire    [`V-1 : 0]      candidateOutVC2;
 wire    [`V-1 : 0]      candidateOutVC3;
+
+// for VC allocation
+wire    [`N-1 : 0]      reqPort0;
+wire    [`N-1 : 0]      reqPort1;
+wire    [`N-1 : 0]      reqPort2;
+wire    [`N-1 : 0]      reqPort3;
+
+wire    [`V-1 : 0]      reqVC0;
+wire    [`V-1 : 0]      reqVC1;
+wire    [`V-1 : 0]      reqVC2;
+wire    [`V-1 : 0]      reqVC3;
+
+wire                    VCgranted0;
+wire                    VCgranted1;
+wire                    VCgranted2;
+wire                    VCgranted3;
+
+wire    [`V-1 : 0]      selOutVC0;
+wire    [`V-1 : 0]      selOutVC1;
+wire    [`V-1 : 0]      selOutVC2;
+wire    [`V-1 : 0]      selOutVC3;
+
+// for switch allocation
+wire    [`N-1 : 0]      reqSA0;
+wire    [`N-1 : 0]      reqSA1;
+wire    [`N-1 : 0]      reqSA2;
+wire    [`N-1 : 0]      reqSA3;
+
+wire                    inputGrantSA0;
+wire                    inputGrantSA1;
+wire                    inputGrantSA2;
+wire                    inputGrantSA3;
+
+// for local VC mux
+wire    [`V-1 : 0]      inputVCSelect;
+
+// for VCID replacement
+reg    [`DW-1 : 0]     data_new_vc0;
+reg    [`DW-1 : 0]     data_new_vc1;
+reg    [`DW-1 : 0]     data_new_vc2;
+reg    [`DW-1 : 0]     data_new_vc3;
+
+//--------------------------------------------------------------------
+//                          VC Buffers
+//--------------------------------------------------------------------
 
 fifo #(
     .width                   (`DW),
@@ -127,26 +209,262 @@ fifo #(
     .data_o                  (buf3_dout)
 );
 
+//--------------------------------------------------------------------
+//                      Input VC Controllers
+//--------------------------------------------------------------------
+
+assign VCgranted0 = VCgraned_to_VC0;
+assign VCgranted1 = VCgraned_to_VC1;
+assign VCgranted2 = VCgraned_to_VC2;
+assign VCgranted3 = VCgraned_to_VC3;
+
 input_vc_controller_base vcc0(
     .clk                            (clk),
     .rstn                           (rstn),
     .data                           (buf0_dout),
     .valid                          (~buf0_empty),
     .dst                            (dst0),
-    .candidateOutPort               (),
-    .candidateOutVC                 (),
-    .reqPort                        (),
-    .reqVC                          (),
-    .VCgranted                      (),
-    .selOutVC                       (),
-    .reqSA                          (),
-    .inputGrantedSA                 (),
-    .readyVC_from_OP0               (),
-    .readyVC_from_OP1               (),
-    .readyVC_from_OP2               (),
-    .readyVC_from_OP3               (),
-    .readyVC_from_OP4               ()
+    .candidateOutPort               (candidateOutPort0),
+    .candidateOutVC                 (candidateOutVC0),
+    .reqPort                        (reqPort0),
+    .reqVC                          (reqVC0),
+    .VCgranted                      (VCgranted0),
+    .selOutVC                       (selOutVC0),
+    .reqSA                          (reqSA0),
+    .inputGrantSA                   (inputGrantSA0),
+    .readyVC_from_OP0               (readyVC_from_OP0),
+    .readyVC_from_OP1               (readyVC_from_OP1),
+    .readyVC_from_OP2               (readyVC_from_OP2),
+    .readyVC_from_OP3               (readyVC_from_OP3),
+    .readyVC_from_OP4               (readyVC_from_OP4)
 );
 
+input_vc_controller_base vcc1(
+    .clk                            (clk),
+    .rstn                           (rstn),
+    .data                           (buf1_dout),
+    .valid                          (~buf1_empty),
+    .dst                            (dst1),
+    .candidateOutPort               (candidateOutPort1),
+    .candidateOutVC                 (candidateOutVC1),
+    .reqPort                        (reqPort1),
+    .reqVC                          (reqVC1),
+    .VCgranted                      (VCgranted1),
+    .selOutVC                       (selOutVC1),
+    .reqSA                          (reqSA1),
+    .inputGrantSA                   (inputGrantSA1),
+    .readyVC_from_OP0               (readyVC_from_OP0),
+    .readyVC_from_OP1               (readyVC_from_OP1),
+    .readyVC_from_OP2               (readyVC_from_OP2),
+    .readyVC_from_OP3               (readyVC_from_OP3),
+    .readyVC_from_OP4               (readyVC_from_OP4)
+);
+
+input_vc_controller_base vcc2(
+    .clk                            (clk),
+    .rstn                           (rstn),
+    .data                           (buf2_dout),
+    .valid                          (~buf2_empty),
+    .dst                            (dst2),
+    .candidateOutPort               (candidateOutPort2),
+    .candidateOutVC                 (candidateOutVC2),
+    .reqPort                        (reqPort2),
+    .reqVC                          (reqVC2),
+    .VCgranted                      (VCgranted2),
+    .selOutVC                       (selOutVC2),
+    .reqSA                          (reqSA2),
+    .inputGrantSA                   (inputGrantSA2),
+    .readyVC_from_OP0               (readyVC_from_OP0),
+    .readyVC_from_OP1               (readyVC_from_OP1),
+    .readyVC_from_OP2               (readyVC_from_OP2),
+    .readyVC_from_OP3               (readyVC_from_OP3),
+    .readyVC_from_OP4               (readyVC_from_OP4)
+);
+
+input_vc_controller_base vcc3(
+    .clk                            (clk),
+    .rstn                           (rstn),
+    .data                           (buf3_dout),
+    .valid                          (~buf3_empty),
+    .dst                            (dst3),
+    .candidateOutPort               (candidateOutPort3),
+    .candidateOutVC                 (candidateOutVC3),
+    .reqPort                        (reqPort3),
+    .reqVC                          (reqVC3),
+    .VCgranted                      (VCgranted3),
+    .selOutVC                       (selOutVC3),
+    .reqSA                          (reqSA3),
+    .inputGrantSA                   (inputGrantSA3),
+    .readyVC_from_OP0               (readyVC_from_OP0),
+    .readyVC_from_OP1               (readyVC_from_OP1),
+    .readyVC_from_OP2               (readyVC_from_OP2),
+    .readyVC_from_OP3               (readyVC_from_OP3),
+    .readyVC_from_OP4               (readyVC_from_OP4)
+);
+
+//--------------------------------------------------------------------
+//                          RC Units
+//--------------------------------------------------------------------
+
+rc #(CUR_X, CUR_Y)rc0(
+    .dst                            (dst0),
+    .candidateOutPort               (candidateOutPort0),
+    .candidateOutVC                 (candidateOutVC0)
+);
+
+rc #(CUR_X, CUR_Y)rc1(
+    .dst                            (dst1),
+    .candidateOutPort               (candidateOutPort1),
+    .candidateOutVC                 (candidateOutVC1)
+);
+
+rc #(CUR_X, CUR_Y)rc2(
+    .dst                            (dst2),
+    .candidateOutPort               (candidateOutPort2),
+    .candidateOutVC                 (candidateOutVC2)
+);
+
+rc #(CUR_X, CUR_Y)rc3(
+    .dst                            (dst3),
+    .candidateOutPort               (candidateOutPort3),
+    .candidateOutVC                 (candidateOutVC3)
+);
+
+//--------------------------------------------------------------------
+//                       VA Input VC Stages
+//--------------------------------------------------------------------
+
+va_ivc_low_cost va_ivc0(
+    .clk                             (clk),
+    .rstn                            (rstn),
+    .reqPort                         (reqPort0),
+    .reqVC                           (reqVC0),
+    .outVCAvailable_P0               (outVCAvailable_P0),
+    .outVCAvailable_P1               (outVCAvailable_P1),
+    .outVCAvailable_P2               (outVCAvailable_P2),
+    .outVCAvailable_P3               (outVCAvailable_P3),
+    .outVCAvailable_P4               (outVCAvailable_P4),
+    .selOutVC                        (selOutVC0),
+    .reqVCOut                        (reqVCOut_from_VC0)
+);
+
+va_ivc_low_cost va_ivc1(
+    .clk                             (clk),
+    .rstn                            (rstn),
+    .reqPort                         (reqPort1),
+    .reqVC                           (reqVC1),
+    .outVCAvailable_P0               (outVCAvailable_P0),
+    .outVCAvailable_P1               (outVCAvailable_P1),
+    .outVCAvailable_P2               (outVCAvailable_P2),
+    .outVCAvailable_P3               (outVCAvailable_P3),
+    .outVCAvailable_P4               (outVCAvailable_P4),
+    .selOutVC                        (selOutVC1),
+    .reqVCOut                        (reqVCOut_from_VC1)
+);
+
+va_ivc_low_cost va_ivc2(
+    .clk                             (clk),
+    .rstn                            (rstn),
+    .reqPort                         (reqPort2),
+    .reqVC                           (reqVC2),
+    .outVCAvailable_P0               (outVCAvailable_P0),
+    .outVCAvailable_P1               (outVCAvailable_P1),
+    .outVCAvailable_P2               (outVCAvailable_P2),
+    .outVCAvailable_P3               (outVCAvailable_P3),
+    .outVCAvailable_P4               (outVCAvailable_P4),
+    .selOutVC                        (selOutVC2),
+    .reqVCOut                        (reqVCOut_from_VC2)
+);
+
+va_ivc_low_cost va_ivc3(
+    .clk                             (clk),
+    .rstn                            (rstn),
+    .reqPort                         (reqPort3),
+    .reqVC                           (reqVC3),
+    .outVCAvailable_P0               (outVCAvailable_P0),
+    .outVCAvailable_P1               (outVCAvailable_P1),
+    .outVCAvailable_P2               (outVCAvailable_P2),
+    .outVCAvailable_P3               (outVCAvailable_P3),
+    .outVCAvailable_P4               (outVCAvailable_P4),
+    .selOutVC                        (selOutVC3),
+    .reqVCOut                        (reqVCOut_from_VC3)
+);
+
+//--------------------------------------------------------------------
+//                      SA Input Port Stage
+//--------------------------------------------------------------------
+
+sa_iport sa_iport(
+    .clk                             (clk),
+    .rstn                            (rstn),
+    .reqSA_from_VC0                  (reqSA0),
+    .reqSA_from_VC1                  (reqSA1),
+    .reqSA_from_VC2                  (reqSA2),
+    .reqSA_from_VC3                  (reqSA3),
+    .reqSAOut                        (reqSAOut),
+    .inputGrantSAIn                  (inputGrantSAIn),
+    .inputGrantSA_to_VC0             (inputGrantSA0),
+    .inputGrantSA_to_VC1             (inputGrantSA1),
+    .inputGrantSA_to_VC2             (inputGrantSA2),
+    .inputGrantSA_to_VC3             (inputGrantSA3).
+    .inputVCSelect                   (inputVCSelect)
+);
+
+
+//--------------------------------------------------------------------
+//                      VCID Replacement
+//
+// for VCID replacement, the selOutVC signal is enough,
+// because only head flit need replacement, and the selOutVC
+// is generated by VA as soon as the head flit exposes.
+//--------------------------------------------------------------------
+
+function [1:0] encode(input [3:0] in);
+    reg [1:0] res;
+    case(in)
+        4'b0001: res = 2'b00;
+        4'b0010: res = 2'b01;
+        4'b0100: res = 2'b10;
+        4'b1000: res = 2'b11;
+        default: res = 2'b00;
+    endcase
+    return res;
+endfunction
+
+always_comb begin
+    data_new_vc0 = buf0_dout;
+    data_new_vc1 = buf1_dout;
+    data_new_vc2 = buf2_dout;
+    data_new_vc3 = buf3_dout;
+
+    if (buf0_dout[`DW-1 : `DW-2] == `HEAD)
+        data_new_vc0[`DW-1 : `DW-2] = encode(selOutVC0)
+    if (buf1_dout[`DW-1 : `DW-2] == `HEAD)
+        data_new_v1[`DW-1 : `DW-2] = encode(selOutVC1)
+    if (buf2_dout[`DW-1 : `DW-2] == `HEAD)
+        data_new_vc2[`DW-1 : `DW-2] = encode(selOutVC2)
+    if (buf3_dout[`DW-1 : `DW-2] == `HEAD)
+        data_new_vc3[`DW-1 : `DW-2] = encode(selOutVC3)
+end
+
+//--------------------------------------------------------------------
+//                   Crossbar Input Port Stage
+//--------------------------------------------------------------------
+
+xb_iport xb_iport(
+    .clk                          (clk),
+    .rstn                         (rstn),
+    .sel                          (inputVCSelect),
+    .data_from_VC0                (data_new_vc0),
+    .data_from_VC1                (data_new_vc1),
+    .data_from_VC2                (data_new_vc2),
+    .data_from_VC3                (data_new_vc3),
+    .valid_from_VC0               (~buf0_empty),
+    .valid_from_VC1               (~buf1_empty),
+    .valid_from_VC2               (~buf2_empty),
+    .valid_from_VC3               (~buf3_empty),
+    .data_out                     (data_out),
+    .valid_out                    (valid_out)
+);
 
 endmodule

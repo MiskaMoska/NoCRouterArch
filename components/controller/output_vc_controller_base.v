@@ -32,7 +32,11 @@ module output_vc_controller_base #(
     input       wire        [`DW-1 : 0]     dat,
 
     // output VC availability flag
-    output      wire                        outVCAvailable                   
+    output      wire                        outVCAvailable,
+
+    // output VC ready (plenty credit)
+    output      wire                        outVCReady
+
 );
 
 reg     [`BUF_DEPTH_LOG-1 : 0]  credit_cnt;
@@ -79,6 +83,7 @@ always @(posedge clk or negedge rstn) begin
     end
 end
 
+assign outVCReady = (credit_cnt > `CREDIT_LBOUND);
 
 //--------------------------------------------------------------------
 //                  Output VC Availability Control

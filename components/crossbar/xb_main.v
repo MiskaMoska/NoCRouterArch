@@ -1,7 +1,7 @@
 /****************************************************************************
  *   Copyright (c) 2023 Wenxu Cao
  *  
- *   Filename:         crossbar_main.v
+ *   Filename:         xb_main.v
  *   Institution:      UESTC
  *   Author:           Wenxu Cao
  *   Version:          1.0
@@ -21,7 +21,7 @@
  *
 *****************************************************************************/
 
-module crossbar_main(
+module xb_main(
     // selected input ports for each output port
     input       wire        [`N-1 : 0]      sel_for_OP0,
     input       wire        [`N-1 : 0]      sel_for_OP1,

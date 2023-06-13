@@ -37,7 +37,7 @@ module input_vc_controller_base(
 
     // signals concerned with SA
     output      wire        [`N-1 : 0]      reqSA,
-    input       wire                        inputGrantedSA, 
+    input       wire                        inputGrantSA, 
 
     // not necessary for the following 2 signals to feedback to input controller
     // they can be fed to crossbar directly from switch allocator
@@ -92,7 +92,7 @@ always @(posedge clk or negedge rstn) begin
         if(VCgranted) begin
             outVCLock <= 1;
             outVC <= selOutVC
-        end else if(inputGrantedSA & (flit_header == `TAIL)) begin
+        end else if(inputGrantSA & (flit_header == `TAIL)) begin
             outVCLock <= 0;
             outVC <= 0; // optional
         end

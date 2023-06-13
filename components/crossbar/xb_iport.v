@@ -1,7 +1,7 @@
 /****************************************************************************
  *   Copyright (c) 2023 Wenxu Cao
  *  
- *   Filename:         crossbar_iport.v
+ *   Filename:         xb_iport.v
  *   Institution:      UESTC
  *   Author:           Wenxu Cao
  *   Version:          1.0
@@ -22,7 +22,7 @@
  *
 *****************************************************************************/
 
-module crossbar_iport(
+module xb_iport(
     input       wire                        clk,
     input       wire                        rstn,
 

@@ -26,18 +26,18 @@ module sa_main(
     input       wire                        rstn,
 
     // port request signals from each input port
-    input       wire        [`N-1 : 0]      reqPort_from_P0,
-    input       wire        [`N-1 : 0]      reqPort_from_P1,
-    input       wire        [`N-1 : 0]      reqPort_from_P2,
-    input       wire        [`N-1 : 0]      reqPort_from_P3,
-    input       wire        [`N-1 : 0]      reqPort_from_P4,
+    input       wire        [`N-1 : 0]      reqSA_from_P0,
+    input       wire        [`N-1 : 0]      reqSA_from_P1,
+    input       wire        [`N-1 : 0]      reqSA_from_P2,
+    input       wire        [`N-1 : 0]      reqSA_from_P3,
+    input       wire        [`N-1 : 0]      reqSA_from_P4,
 
     // port granted indicators to each input port
-    output      wire                        Portgranted_to_IP0,
-    output      wire                        Portgranted_to_IP1,
-    output      wire                        Portgranted_to_IP2,
-    output      wire                        Portgranted_to_IP3,
-    output      wire                        Portgranted_to_IP4,
+    output      wire                        inputGrantSA_to_IP0,
+    output      wire                        inputGrantSA_to_IP1,
+    output      wire                        inputGrantSA_to_IP2,
+    output      wire                        inputGrantSA_to_IP3,
+    output      wire                        inputGrantSA_to_IP4,
 
     // selected input ports for each output port
     output      wire        [`N-1 : 0]      selInPort_for_OP0,
@@ -67,11 +67,11 @@ arbiter #(`N) arb_P3(clk, rstn, arb_P3_req, arb_P3_grant);
 arbiter #(`N) arb_P4(clk, rstn, arb_P4_req, arb_P4_grant);
 
 transpose_5 pre_arbiter_cross(
-    reqPort_from_P0,
-    reqPort_from_P1,
-    reqPort_from_P2,
-    reqPort_from_P3,
-    reqPort_from_P4,
+    reqSA_from_P0,
+    reqSA_from_P1,
+    reqSA_from_P2,
+    reqSA_from_P3,
+    reqSA_from_P4,
 
     arb_P0_req,
     arb_P1_req,
@@ -100,10 +100,10 @@ assign selInPort_for_OP2 = arb_P2_grant;
 assign selInPort_for_OP3 = arb_P3_grant;
 assign selInPort_for_OP4 = arb_P4_grant;
 
-assign Portgranted_to_IP0 = | selOutPort_for_IP0;
-assign Portgranted_to_IP1 = | selOutPort_for_IP1;
-assign Portgranted_to_IP2 = | selOutPort_for_IP2;
-assign Portgranted_to_IP3 = | selOutPort_for_IP3;
-assign Portgranted_to_IP4 = | selOutPort_for_IP4;
+assign inputGrantSA_to_IP0 = | selOutPort_for_IP0;
+assign inputGrantSA_to_IP1 = | selOutPort_for_IP1;
+assign inputGrantSA_to_IP2 = | selOutPort_for_IP2;
+assign inputGrantSA_to_IP3 = | selOutPort_for_IP3;
+assign inputGrantSA_to_IP4 = | selOutPort_for_IP4;
 
 endmodule

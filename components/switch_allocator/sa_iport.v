@@ -26,22 +26,25 @@ module sa_iport(
     input       wire                        rstn,
 
     // input port request signal
-    input       wire        [`N-1 : 0]      reqPort_from_VC0,
-    input       wire        [`N-1 : 0]      reqPort_from_VC1,
-    input       wire        [`N-1 : 0]      reqPort_from_VC2,
-    input       wire        [`N-1 : 0]      reqPort_from_VC3,
+    input       wire        [`N-1 : 0]      reqSA_from_VC0,
+    input       wire        [`N-1 : 0]      reqSA_from_VC1,
+    input       wire        [`N-1 : 0]      reqSA_from_VC2,
+    input       wire        [`N-1 : 0]      reqSA_from_VC3,
     
     // output port request signal
-    output      wire        [`N-1 : 0]      reqPortOut,
+    output      wire        [`N-1 : 0]      reqSAOut,
 
     // input granted signal
-    input       wire                        PortgrantedIn,
+    input       wire                        inputGrantSAIn,
 
     // output granted signal to each VC
-    output      wire        [`N-1 : 0]      Portgranted_to_VC0,
-    output      wire        [`N-1 : 0]      Portgranted_to_VC1,
-    output      wire        [`N-1 : 0]      Portgranted_to_VC2,
-    output      wire        [`N-1 : 0]      Portgranted_to_VC3
+    output      wire        [`N-1 : 0]      inputGrantSA_to_VC0,
+    output      wire        [`N-1 : 0]      inputGrantSA_to_VC1,
+    output      wire        [`N-1 : 0]      inputGrantSA_to_VC2,
+    output      wire        [`N-1 : 0]      inputGrantSA_to_VC3,
+
+    // output select signal for local VC mux
+    output      wire        [`V-1 : 0]      inputVCSelect
 );
 
 wire    reqValid_from_VC0;
@@ -53,10 +56,10 @@ wire    [`V-1 : 0]  local_arb_req, local_arb_grant;
 
 wire    [`N-1 : 0]  
 
-assign reqValid_from_VC0 = | reqPort_from_VC0;
-assign reqValid_from_VC1 = | reqPort_from_VC1;
-assign reqValid_from_VC2 = | reqPort_from_VC2;
-assign reqValid_from_VC3 = | reqPort_from_VC3;
+assign reqValid_from_VC0 = | reqSA_from_VC0;
+assign reqValid_from_VC1 = | reqSA_from_VC1;
+assign reqValid_from_VC2 = | reqSA_from_VC2;
+assign reqValid_from_VC3 = | reqSA_from_VC3;
 
 assign local_arb_req = {
     reqValid_from_VC3, 
@@ -71,20 +74,22 @@ arbiter #(`V) local_arb(
 
 mux_4 #(`N) req_mux(
     local_arb_grant,
-    reqPort_from_VC0,
-    reqPort_from_VC1,
-    reqPort_from_VC2,
-    reqPort_from_VC3,
-    reqPortOut
+    reqSA_from_VC0,
+    reqSA_from_VC1,
+    reqSA_from_VC2,
+    reqSA_from_VC3,
+    reqSAOut
 );
 
 demux_4 #(`N) req_mux(
     local_arb_grant,
-    PortgrantedIn,
-    Portgranted_to_VC0,
-    Portgranted_to_VC1,
-    Portgranted_to_VC2,
-    Portgranted_to_VC3
+    inputGrantSAIn,
+    inputGrantSA_to_VC0,
+    inputGrantSA_to_VC1,
+    inputGrantSA_to_VC2,
+    inputGrantSA_to_VC3
 )
+
+assign inputVCSelect = local_arb_grant;
 
 endmodule

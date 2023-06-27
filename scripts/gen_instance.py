@@ -2,8 +2,8 @@ import os
 # Function: generate a verilog instance from a verilog module file
 # User only need to change the path of the verilog file
 #//////////////////////////////////////////////////////////////////////
-mod_file_root = '/mnt/f/git/NoCRouterArch/components'
-mod_file_path = 'controller/output_vc_controller_base.v'
+mod_file_root = '/mnt/f/git/NoCRouterArch/routers'
+mod_file_path = 'vc_based_routers/non-pipelined/base/input_port_stage.v'
 #/mode_file_root//mode_file_path/
 #this two parameters determine the absolute file path of the module file
 

@@ -24,7 +24,9 @@ module input_port_stage #(
     // from router input port
     input       wire                        valid,
     input       wire        [`DW-1 : 0]     data,
-    output      wire                        ready,
+
+    // credit update signals to upstream
+    output      wire        [`V-1  : 0]     credit_upd,
 
     // output VC ready signals
     input       wire        [`V-1 : 0]      readyVC_from_OP0,
@@ -38,7 +40,7 @@ module input_port_stage #(
     input       wire        [`V-1 : 0]      outVCAvailable_P1,
     input       wire        [`V-1 : 0]      outVCAvailable_P2,
     input       wire        [`V-1 : 0]      outVCAvailable_P3,
-    input       wire        [`V-1 : 0]      outVCAvailable_P4
+    input       wire        [`V-1 : 0]      outVCAvailable_P4,
 
     // from VC allocator main part
     input       wire                        VCgranted_to_VC0,
@@ -53,7 +55,7 @@ module input_port_stage #(
     output      wire        [`N*`V-1 : 0]   reqVCOut_from_VC3,
 
     // from switch allocator main part
-    input       wire                        PortGrantIn,        
+    input       wire                        inputGrantSAIn,        
 
     // to switch allocator main part
     output      wire        [`N-1 : 0]      reqSAOut,
@@ -466,5 +468,10 @@ xb_iport xb_iport(
     .data_out                     (data_out),
     .valid_out                    (valid_out)
 );
+
+//--------------------------------------------------------------------
+//                   Credit Update
+//--------------------------------------------------------------------
+assign credit_upd = {buf3_read, buf2_read, buf1_read, buf0_read};
 
 endmodule

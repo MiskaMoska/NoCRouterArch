@@ -8,7 +8,7 @@
  *   Date:             2023-06-09
  *
  *   Description:      This is a basic output VC controller, which manages a
- *                     credit counter and a output VC availibility flag.
+ *                     credit counter and an output VC availibility flag.
  *                     Presented in Fig.7.8 @ P-122.
  *
  *   Annotation:       This module is designed for non-pipelined router only.
@@ -21,16 +21,16 @@ module output_vc_controller_base #(
     input       wire                        clk,
     input       wire                        rstn,
 
+    // data path signals from the output of the crossbar
+    input       wire                        valid,
+    input       wire        [`DW-1 : 0]     data,
+
     // credit update signals from downstream
-    input       wire        [`V-1 : 0]      update,
+    input       wire                        credit_upd,
 
     // VA availability flag reset signal for the current output VC
     input       wire                        outVCAvailableReset, // from VC allocator
-
-    // data path signals from the output of the crossbar
-    input       wire                        valid,
-    input       wire        [`DW-1 : 0]     dat,
-
+    
     // output VC availability flag
     output      wire                        outVCAvailable,
 
@@ -46,7 +46,7 @@ wire    [1 : 0]                 flit_vcid;
 wire    [1 : 0]                 flit_header;
 wire    [1 : 0]                 credit_cnt_ctrl;
 
-reg                             update_reg;
+reg                             credit_upd_reg;
 reg                             _outVCAvailable;
 
 assign flit_vcid    = data[`DW-1 : `DW-2];
@@ -57,13 +57,13 @@ assign flit_header  = data[`DW-3 : `DW-4];
 //                     Credit Counter Control
 //--------------------------------------------------------------------
 
-assign credit_cnt_ctrl = {(flit_vcid == VCID) & valid, update_reg};
+assign credit_cnt_ctrl = {(flit_vcid == VCID) & valid, credit_upd_reg};
 
 always @(posedge clk or negedge rstn) begin
     if(~rstn) begin
-        update_reg <= 0;
+        credit_upd_reg <= 0;
     end else begin
-        update_reg <= update;
+        credit_upd_reg <= credit_upd;
     end
 end
 

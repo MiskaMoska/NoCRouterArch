@@ -15,6 +15,7 @@
  *   Annotation:       This module is designed for non-pipelined router only.
  *
 *****************************************************************************/
+`include    "params.vh"
 
 module input_vc_controller_base(
     input       wire                        clk,
@@ -39,7 +40,7 @@ module input_vc_controller_base(
     output      wire        [`N-1 : 0]      reqSA,
     input       wire                        inputGrantSA, 
 
-    // not necessary for the following 2 signals to feedback to input controller
+    // not necessary for the following 2 signals to be feedbacked to input controller
     // they can be fed to crossbar directly from switch allocator
     // input       wire        [`V-1 : 0]      inputVCSelect,
     // input       wire        [`N-1 : 0]      outputSelect,
@@ -91,7 +92,7 @@ always @(posedge clk or negedge rstn) begin
     end else begin
         if(VCgranted) begin
             outVCLock <= 1;
-            outVC <= selOutVC
+            outVC <= selOutVC;
         end else if(inputGrantSA & (flit_header == `TAIL)) begin
             outVCLock <= 0;
             outVC <= 0; // optional

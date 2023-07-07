@@ -21,6 +21,7 @@
  *                     combined main allocator.
  *
 *****************************************************************************/
+`include    "params.vh"
 
 module va_ivc_low_cost(
     input       wire                        clk,
@@ -64,7 +65,7 @@ mux_5 #(`V) out_avail_mux(
 
 assign masked_reqVC = reqVC & muxed_outVCAvailable;
 
-arbiter #(`V) local_arb(
+mtx_arbiter #(`V) local_arb(
     clk, rstn, masked_reqVC, selOutVC
 );
 

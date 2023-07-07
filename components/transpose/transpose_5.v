@@ -15,7 +15,7 @@ module transpose_5(
     input       wire        [4 : 0]        input_1,
     input       wire        [4 : 0]        input_2,
     input       wire        [4 : 0]        input_3,
-    input       wire        [4 : 0]        input_4
+    input       wire        [4 : 0]        input_4,
 
     output      wire        [4 : 0]        output_0,
     output      wire        [4 : 0]        output_1,

@@ -11,8 +11,9 @@
  *                     composed of 4 output VC controllers.
  *
 *****************************************************************************/
+`include    "params.vh"
 
-module(
+module output_port_stage(
     input       wire                        clk,
     input       wire                        rstn,
 

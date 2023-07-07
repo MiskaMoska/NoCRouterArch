@@ -6,14 +6,14 @@
  *   Author:           Wenxu Cao
  *   Version:          1.0
  *   Date:             2023-06-08
- *   Description:      This is a basic 4-way mutiplexor
+ *   Description:      This is a basic 4-way multiplexor
  *
 *****************************************************************************/
 
 module mux_4 #(
     parameter       DATA_WIDTH = 4
 )(
-    input       wire        [3:0]                   sel
+    input       wire        [3:0]                   sel,
 
     input       wire        [DATA_WIDTH-1 : 0]      data_i_0,       
     input       wire        [DATA_WIDTH-1 : 0]      data_i_1,       
@@ -25,7 +25,7 @@ module mux_4 #(
 
 reg [DATA_WIDTH-1 : 0] _data_o;
 
-always_comb begin
+always@(*) begin
     case(sel)
         4'b0001:        _data_o = data_i_0;
         4'b0010:        _data_o = data_i_1;

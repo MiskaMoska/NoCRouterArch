@@ -20,6 +20,7 @@
  *                     participate in the main allocation directly.
  *
 *****************************************************************************/
+`include    "params.vh"
 
 module sa_main(
     input       wire                        clk,
@@ -44,14 +45,7 @@ module sa_main(
     output      wire        [`N-1 : 0]      selInPort_for_OP1,
     output      wire        [`N-1 : 0]      selInPort_for_OP2,
     output      wire        [`N-1 : 0]      selInPort_for_OP3,
-    output      wire        [`N-1 : 0]      selInPort_for_OP4,
-
-    //selected output ports for each input port
-    output      wire        [`N-1 : 0]      selOutPort_for_IP0, 
-    output      wire        [`N-1 : 0]      selOutPort_for_IP1, 
-    output      wire        [`N-1 : 0]      selOutPort_for_IP2, 
-    output      wire        [`N-1 : 0]      selOutPort_for_IP3, 
-    output      wire        [`N-1 : 0]      selOutPort_for_IP4
+    output      wire        [`N-1 : 0]      selInPort_for_OP4
 );
 
 wire    [`N-1 : 0]   arb_P0_req, arb_P0_grant;
@@ -60,11 +54,17 @@ wire    [`N-1 : 0]   arb_P2_req, arb_P2_grant;
 wire    [`N-1 : 0]   arb_P3_req, arb_P3_grant;
 wire    [`N-1 : 0]   arb_P4_req, arb_P4_grant;
 
-arbiter #(`N) arb_P0(clk, rstn, arb_P0_req, arb_P0_grant);
-arbiter #(`N) arb_P1(clk, rstn, arb_P1_req, arb_P1_grant);
-arbiter #(`N) arb_P2(clk, rstn, arb_P2_req, arb_P2_grant);
-arbiter #(`N) arb_P3(clk, rstn, arb_P3_req, arb_P3_grant);
-arbiter #(`N) arb_P4(clk, rstn, arb_P4_req, arb_P4_grant);
+wire    [`N-1 : 0]   selOutPort_for_IP0; 
+wire    [`N-1 : 0]   selOutPort_for_IP1; 
+wire    [`N-1 : 0]   selOutPort_for_IP2; 
+wire    [`N-1 : 0]   selOutPort_for_IP3; 
+wire    [`N-1 : 0]   selOutPort_for_IP4;
+
+mtx_arbiter #(`N) arb_P0(clk, rstn, arb_P0_req, arb_P0_grant);
+mtx_arbiter #(`N) arb_P1(clk, rstn, arb_P1_req, arb_P1_grant);
+mtx_arbiter #(`N) arb_P2(clk, rstn, arb_P2_req, arb_P2_grant);
+mtx_arbiter #(`N) arb_P3(clk, rstn, arb_P3_req, arb_P3_grant);
+mtx_arbiter #(`N) arb_P4(clk, rstn, arb_P4_req, arb_P4_grant);
 
 transpose_5 pre_arbiter_cross(
     reqSA_from_P0,
@@ -77,10 +77,10 @@ transpose_5 pre_arbiter_cross(
     arb_P1_req,
     arb_P2_req,
     arb_P3_req,
-    arb_P4_req,
+    arb_P4_req
 );
 
-transpose_5 pre_arbiter_cross(
+transpose_5 post_arbiter_cross(
     arb_P0_grant,
     arb_P1_grant,
     arb_P2_grant,
@@ -91,7 +91,7 @@ transpose_5 pre_arbiter_cross(
     selOutPort_for_IP1,
     selOutPort_for_IP2,
     selOutPort_for_IP3,
-    selOutPort_for_IP4,
+    selOutPort_for_IP4
 );
 
 assign selInPort_for_OP0 = arb_P0_grant;

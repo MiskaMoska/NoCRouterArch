@@ -21,6 +21,7 @@
  *                     words, the input VC request signals must be one-hots. 
  *
 *****************************************************************************/
+`include    "params.vh"
 
 module va_main(
     input       wire                        clk,
@@ -78,31 +79,13 @@ module va_main(
     output      wire                        VCgranted_to_P4_VC2,
     output      wire                        VCgranted_to_P4_VC3,
 
-    // output VC availability reset signals for each output VC
-    output      wire                        outVCAvailableReset_to_P0_VC0,
-    output      wire                        outVCAvailableReset_to_P0_VC1,
-    output      wire                        outVCAvailableReset_to_P0_VC2,
-    output      wire                        outVCAvailableReset_to_P0_VC3,
+    // output VC availability reset signals for each output port
+    output      wire        [`V-1 : 0]      outVCAvailableReset_to_P0,
+    output      wire        [`V-1 : 0]      outVCAvailableReset_to_P1,
+    output      wire        [`V-1 : 0]      outVCAvailableReset_to_P2,
+    output      wire        [`V-1 : 0]      outVCAvailableReset_to_P3,
+    output      wire        [`V-1 : 0]      outVCAvailableReset_to_P4
 
-    output      wire                        outVCAvailableReset_to_P1_VC0,
-    output      wire                        outVCAvailableReset_to_P1_VC1,
-    output      wire                        outVCAvailableReset_to_P1_VC2,
-    output      wire                        outVCAvailableReset_to_P1_VC3,
-
-    output      wire                        outVCAvailableReset_to_P2_VC0,
-    output      wire                        outVCAvailableReset_to_P2_VC1,
-    output      wire                        outVCAvailableReset_to_P2_VC2,
-    output      wire                        outVCAvailableReset_to_P2_VC3,
-
-    output      wire                        outVCAvailableReset_to_P3_VC0,
-    output      wire                        outVCAvailableReset_to_P3_VC1,
-    output      wire                        outVCAvailableReset_to_P3_VC2,
-    output      wire                        outVCAvailableReset_to_P3_VC3,
-
-    output      wire                        outVCAvailableReset_to_P4_VC0,
-    output      wire                        outVCAvailableReset_to_P4_VC1,
-    output      wire                        outVCAvailableReset_to_P4_VC2,
-    output      wire                        outVCAvailableReset_to_P4_VC3
 );
 
 wire    [`N*`V-1 : 0]   arb_P0_VC0_req, arb_P0_VC0_grant;
@@ -147,26 +130,26 @@ wire    [`N*`V-1 : 0]   grantVC_for_P4_VC1;
 wire    [`N*`V-1 : 0]   grantVC_for_P4_VC2;
 wire    [`N*`V-1 : 0]   grantVC_for_P4_VC3;
 
-arbiter #(`N*`V) arb_P0_VC0(clk, rstn, arb_P0_VC0_req, arb_P0_VC0_grant);
-arbiter #(`N*`V) arb_P0_VC1(clk, rstn, arb_P0_VC1_req, arb_P0_VC1_grant);
-arbiter #(`N*`V) arb_P0_VC2(clk, rstn, arb_P0_VC2_req, arb_P0_VC2_grant);
-arbiter #(`N*`V) arb_P0_VC3(clk, rstn, arb_P0_VC3_req, arb_P0_VC3_grant);
-arbiter #(`N*`V) arb_P1_VC0(clk, rstn, arb_P1_VC0_req, arb_P1_VC0_grant);
-arbiter #(`N*`V) arb_P1_VC1(clk, rstn, arb_P1_VC1_req, arb_P1_VC1_grant);
-arbiter #(`N*`V) arb_P1_VC2(clk, rstn, arb_P1_VC2_req, arb_P1_VC2_grant);
-arbiter #(`N*`V) arb_P1_VC3(clk, rstn, arb_P1_VC3_req, arb_P1_VC3_grant);
-arbiter #(`N*`V) arb_P2_VC0(clk, rstn, arb_P2_VC0_req, arb_P2_VC0_grant);
-arbiter #(`N*`V) arb_P2_VC1(clk, rstn, arb_P2_VC1_req, arb_P2_VC1_grant);
-arbiter #(`N*`V) arb_P2_VC2(clk, rstn, arb_P2_VC2_req, arb_P2_VC2_grant);
-arbiter #(`N*`V) arb_P2_VC3(clk, rstn, arb_P2_VC3_req, arb_P2_VC3_grant);
-arbiter #(`N*`V) arb_P3_VC0(clk, rstn, arb_P3_VC0_req, arb_P3_VC0_grant);
-arbiter #(`N*`V) arb_P3_VC1(clk, rstn, arb_P3_VC1_req, arb_P3_VC1_grant);
-arbiter #(`N*`V) arb_P3_VC2(clk, rstn, arb_P3_VC2_req, arb_P3_VC2_grant);
-arbiter #(`N*`V) arb_P3_VC3(clk, rstn, arb_P3_VC3_req, arb_P3_VC3_grant);
-arbiter #(`N*`V) arb_P4_VC0(clk, rstn, arb_P4_VC0_req, arb_P4_VC0_grant);
-arbiter #(`N*`V) arb_P4_VC1(clk, rstn, arb_P4_VC1_req, arb_P4_VC1_grant);
-arbiter #(`N*`V) arb_P4_VC2(clk, rstn, arb_P4_VC2_req, arb_P4_VC2_grant);
-arbiter #(`N*`V) arb_P4_VC3(clk, rstn, arb_P4_VC3_req, arb_P4_VC3_grant);
+mtx_arbiter #(`N*`V) arb_P0_VC0(clk, rstn, arb_P0_VC0_req, arb_P0_VC0_grant);
+mtx_arbiter #(`N*`V) arb_P0_VC1(clk, rstn, arb_P0_VC1_req, arb_P0_VC1_grant);
+mtx_arbiter #(`N*`V) arb_P0_VC2(clk, rstn, arb_P0_VC2_req, arb_P0_VC2_grant);
+mtx_arbiter #(`N*`V) arb_P0_VC3(clk, rstn, arb_P0_VC3_req, arb_P0_VC3_grant);
+mtx_arbiter #(`N*`V) arb_P1_VC0(clk, rstn, arb_P1_VC0_req, arb_P1_VC0_grant);
+mtx_arbiter #(`N*`V) arb_P1_VC1(clk, rstn, arb_P1_VC1_req, arb_P1_VC1_grant);
+mtx_arbiter #(`N*`V) arb_P1_VC2(clk, rstn, arb_P1_VC2_req, arb_P1_VC2_grant);
+mtx_arbiter #(`N*`V) arb_P1_VC3(clk, rstn, arb_P1_VC3_req, arb_P1_VC3_grant);
+mtx_arbiter #(`N*`V) arb_P2_VC0(clk, rstn, arb_P2_VC0_req, arb_P2_VC0_grant);
+mtx_arbiter #(`N*`V) arb_P2_VC1(clk, rstn, arb_P2_VC1_req, arb_P2_VC1_grant);
+mtx_arbiter #(`N*`V) arb_P2_VC2(clk, rstn, arb_P2_VC2_req, arb_P2_VC2_grant);
+mtx_arbiter #(`N*`V) arb_P2_VC3(clk, rstn, arb_P2_VC3_req, arb_P2_VC3_grant);
+mtx_arbiter #(`N*`V) arb_P3_VC0(clk, rstn, arb_P3_VC0_req, arb_P3_VC0_grant);
+mtx_arbiter #(`N*`V) arb_P3_VC1(clk, rstn, arb_P3_VC1_req, arb_P3_VC1_grant);
+mtx_arbiter #(`N*`V) arb_P3_VC2(clk, rstn, arb_P3_VC2_req, arb_P3_VC2_grant);
+mtx_arbiter #(`N*`V) arb_P3_VC3(clk, rstn, arb_P3_VC3_req, arb_P3_VC3_grant);
+mtx_arbiter #(`N*`V) arb_P4_VC0(clk, rstn, arb_P4_VC0_req, arb_P4_VC0_grant);
+mtx_arbiter #(`N*`V) arb_P4_VC1(clk, rstn, arb_P4_VC1_req, arb_P4_VC1_grant);
+mtx_arbiter #(`N*`V) arb_P4_VC2(clk, rstn, arb_P4_VC2_req, arb_P4_VC2_grant);
+mtx_arbiter #(`N*`V) arb_P4_VC3(clk, rstn, arb_P4_VC3_req, arb_P4_VC3_grant);
 
 transpose_20 pre_arbiter_cross(
     // the input order is unimportant
@@ -285,29 +268,10 @@ assign VCgranted_to_P4_VC1 = | grantVC_for_P0_VC1;
 assign VCgranted_to_P4_VC2 = | grantVC_for_P0_VC2;
 assign VCgranted_to_P4_VC3 = | grantVC_for_P0_VC3;
 
+assign outVCAvailableReset_to_P0 = {| arb_P0_VC3_grant, | arb_P0_VC2_grant, | arb_P0_VC1_grant, | arb_P0_VC0_grant};
+assign outVCAvailableReset_to_P1 = {| arb_P1_VC3_grant, | arb_P1_VC2_grant, | arb_P1_VC1_grant, | arb_P1_VC0_grant};
+assign outVCAvailableReset_to_P2 = {| arb_P2_VC3_grant, | arb_P2_VC2_grant, | arb_P2_VC1_grant, | arb_P2_VC0_grant};
+assign outVCAvailableReset_to_P3 = {| arb_P3_VC3_grant, | arb_P3_VC2_grant, | arb_P3_VC1_grant, | arb_P3_VC0_grant};
+assign outVCAvailableReset_to_P4 = {| arb_P4_VC3_grant, | arb_P4_VC2_grant, | arb_P4_VC1_grant, | arb_P4_VC0_grant};
 
-assign outVCAvailableReset_to_P0_VC0 = | arb_P0_VC0_grant;
-assign outVCAvailableReset_to_P0_VC1 = | arb_P0_VC1_grant;
-assign outVCAvailableReset_to_P0_VC2 = | arb_P0_VC2_grant;
-assign outVCAvailableReset_to_P0_VC3 = | arb_P0_VC3_grant;
-
-assign outVCAvailableReset_to_P1_VC0 = | arb_P1_VC0_grant;
-assign outVCAvailableReset_to_P1_VC1 = | arb_P1_VC1_grant;
-assign outVCAvailableReset_to_P1_VC2 = | arb_P1_VC2_grant;
-assign outVCAvailableReset_to_P1_VC3 = | arb_P1_VC3_grant;
-
-assign outVCAvailableReset_to_P2_VC0 = | arb_P2_VC0_grant;
-assign outVCAvailableReset_to_P2_VC1 = | arb_P2_VC1_grant;
-assign outVCAvailableReset_to_P2_VC2 = | arb_P2_VC2_grant;
-assign outVCAvailableReset_to_P2_VC3 = | arb_P2_VC3_grant;
-
-assign outVCAvailableReset_to_P3_VC0 = | arb_P3_VC0_grant;
-assign outVCAvailableReset_to_P3_VC1 = | arb_P3_VC1_grant;
-assign outVCAvailableReset_to_P3_VC2 = | arb_P3_VC2_grant;
-assign outVCAvailableReset_to_P3_VC3 = | arb_P3_VC3_grant;
-
-assign outVCAvailableReset_to_P4_VC0 = | arb_P4_VC0_grant;
-assign outVCAvailableReset_to_P4_VC1 = | arb_P4_VC1_grant;
-assign outVCAvailableReset_to_P4_VC2 = | arb_P4_VC2_grant;
-assign outVCAvailableReset_to_P4_VC3 = | arb_P4_VC3_grant;
 endmodule

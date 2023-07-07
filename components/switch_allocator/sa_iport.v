@@ -20,6 +20,7 @@
  *                     participate in the main allocation directly.
  *
 *****************************************************************************/
+`include    "params.vh"
 
 module sa_iport(
     input       wire                        clk,
@@ -38,10 +39,10 @@ module sa_iport(
     input       wire                        inputGrantSAIn,
 
     // output granted signal to each VC
-    output      wire        [`N-1 : 0]      inputGrantSA_to_VC0,
-    output      wire        [`N-1 : 0]      inputGrantSA_to_VC1,
-    output      wire        [`N-1 : 0]      inputGrantSA_to_VC2,
-    output      wire        [`N-1 : 0]      inputGrantSA_to_VC3,
+    output      wire                        inputGrantSA_to_VC0,
+    output      wire                        inputGrantSA_to_VC1,
+    output      wire                        inputGrantSA_to_VC2,
+    output      wire                        inputGrantSA_to_VC3,
 
     // output select signal for local VC mux
     output      wire        [`V-1 : 0]      inputVCSelect
@@ -53,8 +54,6 @@ wire    reqValid_from_VC2;
 wire    reqValid_from_VC3;
 
 wire    [`V-1 : 0]  local_arb_req, local_arb_grant;
-
-wire    [`N-1 : 0]  
 
 assign reqValid_from_VC0 = | reqSA_from_VC0;
 assign reqValid_from_VC1 = | reqSA_from_VC1;
@@ -68,7 +67,7 @@ assign local_arb_req = {
     reqValid_from_VC0
 };
 
-arbiter #(`V) local_arb(
+mtx_arbiter #(`V) local_arb(
     clk, rstn, local_arb_req, local_arb_grant
 );
 
@@ -81,14 +80,14 @@ mux_4 #(`N) req_mux(
     reqSAOut
 );
 
-demux_4 #(`N) req_mux(
+demux_4 #(1) grant_demux(
     local_arb_grant,
     inputGrantSAIn,
     inputGrantSA_to_VC0,
     inputGrantSA_to_VC1,
     inputGrantSA_to_VC2,
     inputGrantSA_to_VC3
-)
+);
 
 assign inputVCSelect = local_arb_grant;
 

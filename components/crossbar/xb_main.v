@@ -20,6 +20,7 @@
  *                     participate in the main allocation directly.
  *
 *****************************************************************************/
+`include    "params.vh"
 
 module xb_main(
     // selected input ports for each output port
@@ -110,52 +111,52 @@ mux_5 #(`DW) mux_data_for_OP4(
 
 mux_5 #(1) mux_valid_for_OP0(
     sel_for_OP0,
-    data_from_P0,
-    data_from_P1,
-    data_from_P2,
-    data_from_P3,
-    data_from_P4,
-    data_to_P0
+    valid_from_P0,
+    valid_from_P1,
+    valid_from_P2,
+    valid_from_P3,
+    valid_from_P4,
+    valid_to_P0
 );
 
 mux_5 #(1) mux_valid_for_OP1(
     sel_for_OP1,
-    data_from_P0,
-    data_from_P1,
-    data_from_P2,
-    data_from_P3,
-    data_from_P4,
-    data_to_P1
+    valid_from_P0,
+    valid_from_P1,
+    valid_from_P2,
+    valid_from_P3,
+    valid_from_P4,
+    valid_to_P1
 );
 
 mux_5 #(1) mux_valid_for_OP2(
     sel_for_OP2,
-    data_from_P0,
-    data_from_P1,
-    data_from_P2,
-    data_from_P3,
-    data_from_P4,
-    data_to_P2
+    valid_from_P0,
+    valid_from_P1,
+    valid_from_P2,
+    valid_from_P3,
+    valid_from_P4,
+    valid_to_P2
 );
 
 mux_5 #(1) mux_valid_for_OP3(
     sel_for_OP3,
-    data_from_P0,
-    data_from_P1,
-    data_from_P2,
-    data_from_P3,
-    data_from_P4,
-    data_to_P3
+    valid_from_P0,
+    valid_from_P1,
+    valid_from_P2,
+    valid_from_P3,
+    valid_from_P4,
+    valid_to_P3
 );
 
 mux_5 #(1) mux_valid_for_OP4(
     sel_for_OP4,
-    data_from_P0,
-    data_from_P1,
-    data_from_P2,
-    data_from_P3,
-    data_from_P4,
-    data_to_P4
+    valid_from_P0,
+    valid_from_P1,
+    valid_from_P2,
+    valid_from_P3,
+    valid_from_P4,
+    valid_to_P4
 );
 
 endmodule

@@ -12,6 +12,7 @@
  *   Annotation:       This module can be applied to any router architecture.
  *
 *****************************************************************************/
+`include    "params.vh"
 
 module rc #(
     parameter                               CUR_X = 0,
@@ -22,6 +23,8 @@ module rc #(
     output      wire        [`V-1 : 0]      candidateOutVC
 );
 
-
+// dummy routing function
+assign candidateOutPort = 1;
+assign candidateOutVC = 1;
 
 endmodule

@@ -6,14 +6,14 @@
  *   Author:           Wenxu Cao
  *   Version:          1.0
  *   Date:             2023-06-08
- *   Description:      This is a basic 5-way mutiplexor
+ *   Description:      This is a basic 5-way multiplexor
  *
 *****************************************************************************/
 
 module mux_5 #(
     parameter       DATA_WIDTH = 4
 )(
-    input       wire        [4:0]                   sel
+    input       wire        [4:0]                   sel,
 
     input       wire        [DATA_WIDTH-1 : 0]      data_i_0,       
     input       wire        [DATA_WIDTH-1 : 0]      data_i_1,       
@@ -26,7 +26,7 @@ module mux_5 #(
 
 reg [DATA_WIDTH-1 : 0] _data_o;
 
-always_comb begin
+always@(*) begin
     case(sel)
         5'b00001:       _data_o = data_i_0;
         5'b00010:       _data_o = data_i_1;

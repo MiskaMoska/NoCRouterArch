@@ -2,12 +2,12 @@ import os
 # Function: generate a verilog instance from a verilog module file
 # User only need to change the path of the verilog file
 #//////////////////////////////////////////////////////////////////////
-mod_file_root = '/mnt/f/git/NoCRouterArch/routers'
-mod_file_path = 'vc_based_routers/non-pipelined/base/input_port_stage.v'
+mod_file_root = '/mnt/f/git/NoCRouterArch/components'
+mod_file_path = 'switch_allocator/sa_main.v'
 #/mode_file_root//mode_file_path/
 #this two parameters determine the absolute file path of the module file
 
-MODE = 0
+MODE = 1
 #/MODE/ instantation mode
 #0: empty mode:no user signal name
 #1: backtrack mode: user signal name is the same as module signal name(with suffix:SUFFIX)

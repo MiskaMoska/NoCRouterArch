@@ -21,6 +21,7 @@
  *                     participate in the main allocation directly.
  *
 *****************************************************************************/
+`include    "params.vh"
 
 module xb_iport(
     input       wire                        clk,
@@ -45,7 +46,7 @@ module xb_iport(
     output      wire        [`DW-1 : 0]     data_out,
 
     // output valid signal to the main part of the crossbar
-    output      wire                        valid_out,            
+    output      wire                        valid_out          
 );
 
 mux_4 #(`DW) data_mux(

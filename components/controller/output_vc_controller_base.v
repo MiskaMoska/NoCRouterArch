@@ -14,6 +14,7 @@
  *   Annotation:       This module is designed for non-pipelined router only.
  *
 *****************************************************************************/
+`include    "params.vh"
 
 module output_vc_controller_base #(
     parameter               [1 : 0]         VCID     
@@ -32,7 +33,7 @@ module output_vc_controller_base #(
     input       wire                        outVCAvailableReset, // from VC allocator
     
     // output VC availability flag
-    output      wire                        outVCAvailable,
+    output      reg                         outVCAvailable,
 
     // output VC ready (plenty credit)
     output      wire                        outVCReady
@@ -67,10 +68,10 @@ always @(posedge clk or negedge rstn) begin
     end
 end
 
-always_comb begin
+always@(*) begin
     case(credit_cnt_ctrl)
-        2'b01:  nxt_credit_cnt = credit_cnt + 1;
-        2'b10:  nxt_credit_cnt = credit_cnt -1;
+        2'b01: nxt_credit_cnt = credit_cnt + 1;
+        2'b10: nxt_credit_cnt = credit_cnt - 1;
         default: nxt_credit_cnt = credit_cnt;
     endcase
 end

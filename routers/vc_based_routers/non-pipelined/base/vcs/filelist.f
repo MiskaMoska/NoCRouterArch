@@ -16,8 +16,8 @@ $NRA_HOME/components/transpose/transpose_20.v
 $NRA_HOME/components/utils/vc_replacement.v
 $NRA_HOME/components/vc_allocator/va_ivc_low_cost.v
 $NRA_HOME/components/vc_allocator/va_main.v
-./input_port_stage.v
-./output_port_stage.v
-./router.v
+../rtl/input_port_stage.v
+../rtl/output_port_stage.v
+../rtl/router.v
 
 

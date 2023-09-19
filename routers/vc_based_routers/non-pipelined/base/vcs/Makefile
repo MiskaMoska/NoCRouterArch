@@ -2,7 +2,7 @@
 COMPILER = vcs -full64 -cc gcc-4.8 -cpp g++-4.8 -LDFLAGS -Wl,-no-as-needed
 TOP_MODULE = -top router
 TIMESCALE = -timescale=1ns/1ps
-INCDIR = +incdir+.
+INCDIR = +incdir+../rtl
 
 # Verdi
 PLI_TAB = $(VERDI_HOME)/share/PLI/VCS/LINUXAMD64/novas.tab

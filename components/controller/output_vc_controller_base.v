@@ -17,7 +17,7 @@
 `include    "params.vh"
 
 module output_vc_controller_base #(
-    parameter               [1 : 0]         VCID     
+    parameter               [1 : 0]         VCID  = 2'b00   
 )(
     input       wire                        clk,
     input       wire                        rstn,
